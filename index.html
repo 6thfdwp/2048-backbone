@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>2048 backbone</title>
+
+	<link rel="shortcut icon" href="favicon.ico">
+	<link href="style/main.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="heading">
+		  <h1 class="title">2048</h1>
+		  <div class="scores-container">
+		    <div class="score-container">0</div>
+		    <div class="best-container">0</div>
+		  </div>
+		</div>
+
+		<div class="game-container">
+			<div class="grid-container">
+
+			</div>
+
+			<div class="tile-container">
+			</div>
+
+			<script type="text/template" id="game-board-template">
+			<% for(var y=0; y<size; y++) { %>
+				<div class="grid-row">
+					<% for(var x=0; x<size; x++) { %>
+						<div class="grid-cell"></div>
+					<% } %>
+				</div>
+			<% } %> <!-- end for y -->
+			</script>
+			<script type="text/template" id="game-tile-template">
+				<div id="" class="tile tile-<%- value %> tile-position-<%= x %>-<%= y %>">
+					<div class="tile-inner"><%- value %></div>
+				</div>
+			</script>
+		</div>
+	</div>
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.0.min.js"></script>
+	<script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+	<script src="http://documentcloud.github.com/backbone/backbone-min.js"></script>
+	<script src="js/tile.js"></script>
+	<script src="js/grid.js"></script>
+	<script src="js/game-view.js"></script>
+</body>
+</html>
