@@ -39,6 +39,7 @@ app.Grid = Backbone.Collection.extend({
             var value = Math.random() < 0.9 ? 2 : 4;
             var free = tiles[Math.floor(Math.random() * tiles.length)];
             free.put(value);
+            free.set({isNew: true});
             //return free.attributes;
         }
     },
@@ -64,9 +65,9 @@ app.Grid = Backbone.Collection.extend({
         return moved;
     },
 
-    resetMergedTiles: function() {
+    resetTiles: function() {
         this.each(function(tile, i, list) {
-            tile.set({mergedFrom: false});
+            tile.set({mergedFrom: false, isNew: false});
         });
     },
 
@@ -87,7 +88,7 @@ app.Grid = Backbone.Collection.extend({
             this.randomTile(); 
             console.info(_(this.getOccupiedTiles()).pluck('attributes') );
             this.trigger('tileschange', this);
-            this.resetMergedTiles();
+            this.resetTiles();
         }
     },
 });

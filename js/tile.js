@@ -84,6 +84,9 @@ var app = app || {};
         isMerged: function() {
             return this.get('mergedFrom');
         },
+        isNew: function() {
+            return this.get('isNew');
+        },
 
         mergeTo: function(other) {
             var value = this.get('value');

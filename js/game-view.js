@@ -5,7 +5,7 @@ app.GameBoard = Backbone.View.extend({
     tileTpl: _.template($('#game-tile-template').html()),
     
     initialize: function() {
-        //this.listenTo(app.grid, 'tileschange', this.rePaint);
+        this.listenTo(app.grid, 'tileschange', this.rePaint);
         this.listenTo(app.grid, 'tileschange', this.log);
         this.render();
         // set up random tiles when game starts
@@ -22,17 +22,22 @@ app.GameBoard = Backbone.View.extend({
         return {x:x+1, y:y+1};
     },
 
-    clear: function() {
-        $('.tile-container').removeChildren();
+    clearTiles: function() {
+        $('.tile-container').empty();
     },
 
     rePaint: function(grid) {
+        this.clearTiles();
         var tiles = grid.getOccupiedTiles();
-        console.info(tiles);
         _(tiles).each(function(tile, i) {
             var pos = this._normalizePos(tile.get('x'), tile.get('y'));
             var tplstr = this.tileTpl({x:pos.x, y:pos.y, value:tile.get('value')});
-            $('.tile-container').append($(tplstr));
+            var tileEl = $(tplstr);
+            if (tile.isNew())
+                tileEl.addClass('tile-new');
+            if (tile.isMerged())
+                tileEl.addClass('tile-merged');
+            $('.tile-container').append(tileEl);
         }, this);
     },
 
