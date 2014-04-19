@@ -1,6 +1,14 @@
 app.GameBoard = Backbone.View.extend({
     el: $(document),
-    events: {},
+    events: {
+        'keydown': 'move'
+    },
+    keyMap: {
+        38: 'up',
+        39: 'right',
+        40: 'down',
+        37: 'left'
+    },
     template: _.template($('#game-board-template').html() ),
     tileTpl: _.template($('#game-tile-template').html()),
     
@@ -18,6 +26,16 @@ app.GameBoard = Backbone.View.extend({
         return this;
     },
     
+    move: function(event) {
+        var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
+            event.shiftKey;
+        var dir    = this.keyMap[event.which];
+        if (!modifiers && dir != undefined) {
+            event.preventDefault();
+            app.grid.move(dir);
+        }
+    },
+
     _normalizePos: function(x, y) {
         return {x:x+1, y:y+1};
     },
@@ -42,7 +60,7 @@ app.GameBoard = Backbone.View.extend({
     },
 
     log: function(grid) {
-        var padding = '      '
+        var padding = '      ';
         var row = [];
         grid.each(function(tile, i, list) {
             if (tile.isfree())
