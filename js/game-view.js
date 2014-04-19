@@ -35,7 +35,7 @@ app.GameBoard = Backbone.View.extend({
             var tileEl = $(tplstr);
             if (tile.isNew())
                 tileEl.addClass('tile-new');
-            if (tile.isMerged())
+            else if (tile.isMerged())
                 tileEl.addClass('tile-merged');
             $('.tile-container').append(tileEl);
         }, this);
