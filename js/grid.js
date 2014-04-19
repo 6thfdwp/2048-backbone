@@ -21,10 +21,6 @@ app.Grid = Backbone.Collection.extend({
         this.trigger('tileschange', this);
     },
 
-    pos_to_idx: function(x, y) {
-        return y * this.size + x
-    },
-
     getFreeTiles: function() {
         return this.filter(function(tile) {
             return tile.isfree();
@@ -44,14 +40,13 @@ app.Grid = Backbone.Collection.extend({
             var free = tiles[Math.floor(Math.random() * tiles.length)];
             free.put(value);
             //return free.attributes;
-            //var pos = this.idx_to_pos(idx);
-            //return {x:pos.x, y:pos.y, idx:idx, value:value};
         }
     },
 
     moveTile: function(tile, direction) {
         var moved = false;
-        var next = this.findNext(tile, direction);
+        //var next = this.findNext(tile, direction);
+        var next = tile.findNext(direction);
         var farthest = next.farthest;
         var sibling = next.sibling;
         // mergedFrom used to prevent continuous merge in one row or col
@@ -69,54 +64,31 @@ app.Grid = Backbone.Collection.extend({
         return moved;
     },
 
-    // find next as far as possible following the direction
-    // return this tile and its sibling along with the direction
-    findNext: function(tile, direction) {
-        var farthest;
-        do {
-            farthest = tile;
-            tile = tile[direction]();
-        } while (tile && tile.isfree());
-        return {farthest:farthest, sibling:tile};
-    },
-
     resetMergedTiles: function() {
         this.each(function(tile, i, list) {
             tile.set({mergedFrom: false});
         });
     },
 
+    buildTraversal: function(direction) {
+        var otiles = this.getOccupiedTiles();
+        return (direction == 'up' || direction == 'left') ?
+            otiles : otiles.reverse();
+    },
+
     move: function(direction) {
         var moved = false;
-        // up or left, iterate forward
-        if (direction =='up' || direction =='left') {
-            this.each(function(tile) {
-                if (!tile.isfree()) {
-                    var r = this.moveTile(tile, direction);
-                    if (!moved) moved = r // moved should be true if one tile moved
-                }
-            }, this);
-        }
-        // down or right, iterate backward
-        if (direction =='down' || direction =='right') {
-            var num = this.size * this.size;
-            for (var i=num-1; i>=0; i--) {
-                var tile = this.at(i);
-                if (!tile.isfree()) {
-                    var r = this.moveTile(tile, direction);
-                    if (!moved) moved = r // moved should be true if one tile moved
-                }
-            }
-        }
+        _(this.buildTraversal(direction)).each(function(tile, i) {
+            var r = this.moveTile(tile, direction);
+            // moved should be true if one tile moved
+            if (!moved) moved = r 
+        }, this);
         if (moved) { // move done, random a new one and trigger view to repaint 
             this.randomTile(); 
             console.info(_(this.getOccupiedTiles()).pluck('attributes') );
             this.trigger('tileschange', this);
             this.resetMergedTiles();
         }
-    },
-
-    draw: function() {
     },
 });
 app.grid = new app.Grid();

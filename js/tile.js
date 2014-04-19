@@ -65,6 +65,18 @@ var app = app || {};
             return idx % size == size-1 ? null : this.get('grid').at(right);
         },
 
+        // find next available tiles as far as possible following the direction
+        // return this tile and its sibling
+        findNext: function(direction) {
+            var farthest;
+            var tile = this;
+            do {
+                farthest = tile;
+                tile = tile[direction]();
+            } while (tile && tile.isfree());
+            return {farthest:farthest, sibling:tile};
+        },
+
         equals: function(other) {
             return this.get('value') == other.get('value');
         },
