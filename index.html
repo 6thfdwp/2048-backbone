@@ -10,17 +10,20 @@
 
 <body>
 	<div class="container">
+		<div class="above-game">
+		  <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+		  <a class="restart-button">New Game</a>
+		</div>
 		<div class="heading">
 		  <h1 class="title">2048</h1>
 		  <div class="scores-container">
 		    <div class="score-container">0</div>
-		    <div class="best-container">0</div>
+		    <div class="best-container">N/A</div>
 		  </div>
 		</div>
 
 		<div class="game-container">
 			<div class="grid-container">
-
 			</div>
 
 			<div class="tile-container">
@@ -36,7 +39,7 @@
 			<% } %> <!-- end for y -->
 			</script>
 			<script type="text/template" id="game-tile-template">
-				<div id="" class="tile tile-<%- value %> tile-position-<%= x %>-<%= y %>">
+				<div id="" class="tile tile-<%- value %>">
 					<div class="tile-inner"><%- value %></div>
 				</div>
 			</script>
@@ -45,6 +48,9 @@
 	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.0.min.js"></script>
 	<script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
 	<script src="http://documentcloud.github.com/backbone/backbone-min.js"></script>
+	<script src="js/bind_polyfill.js"></script>
+	<script src="js/classlist_polyfill.js"></script>
+	<script src="js/animframe_polyfill.js"></script>
 	<script src="js/tile.js"></script>
 	<script src="js/grid.js"></script>
 	<script src="js/game-view.js"></script>

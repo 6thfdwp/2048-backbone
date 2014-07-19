@@ -3,6 +3,7 @@ var app = app || {};
 app.Grid = Backbone.Collection.extend({
     size: 4,
     startTiles: 2,
+    score: 0,
     model: app.Tile,
 
     initialize: function(modeldata, options) {
@@ -45,8 +46,7 @@ app.Grid = Backbone.Collection.extend({
     },
 
     moveTile: function(tile, direction) {
-        var moved = false;
-        //var next = this.findNext(tile, direction);
+        var moved = false, gained = 0;
         var next = tile.findNext(direction);
         var farthest = next.farthest;
         var sibling = next.sibling;
@@ -54,20 +54,30 @@ app.Grid = Backbone.Collection.extend({
         if (sibling && sibling.equals(tile) && !sibling.isMerged()) {
             moved = true;
             tile.mergeTo(sibling);
+            gained = sibling.get('value');
         }
         else if (!tile.equals(farthest) ) { // farthest is another free tile
             moved = true;
-            farthest.put(tile.get('value'));
-            tile.free();
+            tile.moveTo(farthest);
+            //farthest.put(tile.get('value'));
+            //tile.free();
         }
         //console.info(this.getOccupiedTiles());
-        //this.trigger('tileschange', this);
-        return moved;
+        return {moved:moved, gained:gained};
     },
 
     resetTiles: function() {
         this.each(function(tile, i, list) {
             tile.set({mergedFrom: false, isNew: false});
+        });
+    },
+    prepareTiles: function() {
+        //set each tile state for next move
+        this.each(function(tile, i, list) {
+            tile.set({
+                mergedFrom: false, isNew: false,
+                prev: null
+            });
         });
     },
 
@@ -79,16 +89,25 @@ app.Grid = Backbone.Collection.extend({
 
     move: function(direction) {
         var moved = false;
+        var gained = 0; //total gain in the new move
+        //set tile state for the next move (prev, mergeFrom etc.)
+        this.prepareTiles();
+
         _(this.buildTraversal(direction)).each(function(tile, i) {
             var r = this.moveTile(tile, direction);
             // moved should be true if one tile moved
-            if (!moved) moved = r 
+            if (!moved) moved = r.moved; 
+            gained += r.gained;
         }, this);
-        if (moved) { // move done, random a new one and trigger view to repaint 
+        if (moved) { 
+            // move done, random a new one and trigger view to repaint 
             this.randomTile(); 
-            console.info(_(this.getOccupiedTiles()).pluck('attributes') );
+            //console.info(_(this.getOccupiedTiles()).pluck('attributes') );
             this.trigger('tileschange', this);
-            this.resetTiles();
+            if (gained != 0) {
+                this.score += gained;
+                this.trigger('scorechange', this.score, gained);
+            }
         }
     },
 });

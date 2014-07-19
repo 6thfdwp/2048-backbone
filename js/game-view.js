@@ -13,11 +13,15 @@ app.GameBoard = Backbone.View.extend({
     tileTpl: _.template($('#game-tile-template').html()),
     
     initialize: function() {
-        this.listenTo(app.grid, 'tileschange', this.rePaint);
-        this.listenTo(app.grid, 'tileschange', this.log);
+        //this.listenTo(app.grid, 'tileschange', this.rePaint);
+        this.listenTo(this.model, 'tileschange', this.rePaint);
+        //this.listenTo(app.grid, 'scorechange', this.updateScore);
+        this.listenTo(this.model, 'scorechange', this.updateScore);
+        //for debug 
+        //this.listenTo(app.grid, 'tileschange', this.log);
         this.render();
         // set up random tiles when game starts
-        app.grid.setup();
+        this.model.setup();
     },
 
     render: function() {
@@ -27,6 +31,7 @@ app.GameBoard = Backbone.View.extend({
     },
     
     move: function(event) {
+        //Backbone ensure 'this' point to view object in event delegate
         var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
             event.shiftKey;
         var dir    = this.keyMap[event.which];
@@ -44,19 +49,59 @@ app.GameBoard = Backbone.View.extend({
         $('.tile-container').empty();
     },
 
-    rePaint: function(grid) {
-        this.clearTiles();
-        var tiles = grid.getOccupiedTiles();
+    _positionClass: function(pos) {
+        return 'tile-position-' + pos.x + '-' + pos.y;
+    },
+    addTiles: function(tiles) {
+        var r = [];
         _(tiles).each(function(tile, i) {
-            var pos = this._normalizePos(tile.get('x'), tile.get('y'));
-            var tplstr = this.tileTpl({x:pos.x, y:pos.y, value:tile.get('value')});
+            var prev = tile.get('prev');
+            var tilePos = this._normalizePos(tile.get('x'), tile.get('y'));
+            var tilePosClass = this._positionClass(tilePos);
+            //var classes = [posClass];
+            var tplstr = this.tileTpl({
+                value:tile.get('value')
+            });
             var tileEl = $(tplstr);
-            if (tile.isNew())
+            //if a tile moved, first apply its previous position
+            //otherwise apply its original position
+            var pos = prev ? this._normalizePos(prev.get('x'), prev.get('y')) : tilePos;
+            var posClass = this._positionClass(pos);
+            tileEl.addClass(posClass);
+            if (prev) {
+                window.requestAnimationFrame(function() {
+                    //var finalPos = this._positionClass(tilePos);
+                    tileEl.removeClass(posClass);
+                    tileEl.addClass(tilePosClass);
+                });
+            }
+            else if (tile.isNew())
+                //classes.push('tile-new');
                 tileEl.addClass('tile-new');
             else if (tile.isMerged())
+                //classes.push('tile-merged');
                 tileEl.addClass('tile-merged');
+            //tileEl.addClass(classes.join(' '));
+            r.push(tileEl);
             $('.tile-container').append(tileEl);
         }, this);
+    },
+
+    rePaint: function(grid) {
+        var tiles = grid.getOccupiedTiles();
+        var self = this;
+        window.requestAnimationFrame(function() {
+            self.clearTiles();
+            self.addTiles(tiles);
+        });
+    },
+
+    updateScore: function(score, gained) {
+        //$('.score-container:first-child').remove();
+        var gainEl = $('<div class="score-addition"></div>');
+        gainEl.text('+' + gained);
+        $('.score-container').text(score);
+        $('.score-container').append(gainEl);
     },
 
     log: function(grid) {

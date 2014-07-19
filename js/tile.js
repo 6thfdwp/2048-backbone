@@ -4,8 +4,11 @@ var app = app || {};
     app.Tile = Backbone.Model.extend({
         defaults: {
             x: null, y: null,
-            idx: null,
-            value: 0
+            idx:        null,
+            value:      0,
+            mergedFrom: false,
+            isNew:      false,
+            prev:       null
         },
 
         initialize: function() {
@@ -36,7 +39,6 @@ var app = app || {};
         },
 
         free: function() {
-            //this.set({x:null, y:null});
             this.set({value: 0, mergedFrom: false});
         },
 
@@ -70,6 +72,7 @@ var app = app || {};
         findNext: function(direction) {
             var farthest;
             var tile = this;
+            //keep moving until hit grid boundary or another tile
             do {
                 farthest = tile;
                 tile = tile[direction]();
@@ -91,13 +94,14 @@ var app = app || {};
         mergeTo: function(other) {
             var value = this.get('value');
             other.put(value*2);
+            //mergedFrom = [this, other);]
             other.set({mergedFrom: true});
-            //other.set({value: value*value});
             this.free();
         },
 
         moveTo: function(other) {
             other.put(this.get('value'));
+            other.set({prev: this});
             this.free();
         }
 
