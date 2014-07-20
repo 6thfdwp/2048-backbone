@@ -10,10 +10,6 @@
 
 <body>
 	<div class="container">
-		<div class="above-game">
-		  <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
-		  <a class="restart-button">New Game</a>
-		</div>
 		<div class="heading">
 		  <h1 class="title">2048</h1>
 		  <div class="scores-container">
@@ -22,6 +18,20 @@
 		  </div>
 		</div>
 
+		<div class="above-game">
+		  <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
+		  <a class="restart-button">New Game</a>
+		</div>
+
+		<div class="note">
+			<p>
+			<strong class="important">Note:</strong> This site is the official version of 2048. You can play it on your phone via <a href="http://git.io/2048">http://git.io/2048.</a> All other apps or sites are derivatives or fakes, and should be used with caution.
+			</p>
+			<hr>
+			<p>
+			Created by <a href="http://gabrielecirulli.com" target="_blank">Gabriele Cirulli.</a> Based on <a href="https://itunes.apple.com/us/app/1024!/id823499224" target="_blank">1024 by Veewo Studio</a> and conceptually similar to <a href="http://asherv.com/threes/" target="_blank">Threes by Asher Vollmer.</a>
+			</p>
+		</div>
 		<div class="game-container">
 			<div class="grid-container">
 			</div>
@@ -29,6 +39,7 @@
 			<div class="tile-container">
 			</div>
 
+			<!-- template definition -->
 			<script type="text/template" id="game-board-template">
 			<% for(var y=0; y<size; y++) { %>
 				<div class="grid-row">
@@ -48,8 +59,8 @@
 	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.10.0.min.js"></script>
 	<script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
 	<script src="http://documentcloud.github.com/backbone/backbone-min.js"></script>
-	<script src="js/bind_polyfill.js"></script>
-	<script src="js/classlist_polyfill.js"></script>
+	<!-- // <script src="js/bind_polyfill.js"></script> -->
+	<!-- // <script src="js/classlist_polyfill.js"></script> -->
 	<script src="js/animframe_polyfill.js"></script>
 	<script src="js/tile.js"></script>
 	<script src="js/grid.js"></script>

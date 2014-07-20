@@ -66,11 +66,6 @@ app.Grid = Backbone.Collection.extend({
         return {moved:moved, gained:gained};
     },
 
-    resetTiles: function() {
-        this.each(function(tile, i, list) {
-            tile.set({mergedFrom: false, isNew: false});
-        });
-    },
     prepareTiles: function() {
         //set each tile state for next move
         this.each(function(tile, i, list) {

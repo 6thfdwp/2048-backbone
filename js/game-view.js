@@ -70,7 +70,6 @@ app.GameBoard = Backbone.View.extend({
             tileEl.addClass(posClass);
             if (prev) {
                 window.requestAnimationFrame(function() {
-                    //var finalPos = this._positionClass(tilePos);
                     tileEl.removeClass(posClass);
                     tileEl.addClass(tilePosClass);
                 });
