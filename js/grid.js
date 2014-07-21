@@ -1,10 +1,11 @@
 var app = app || {};
 
 app.Grid = Backbone.Collection.extend({
-    size: 4,
+    size:       4,
     startTiles: 2,
-    score: 0,
-    model: app.Tile,
+    score:      0,
+    won:        false,
+    model:      app.Tile,
 
     initialize: function(modeldata, options) {
         var num = this.size* this.size;
@@ -53,14 +54,15 @@ app.Grid = Backbone.Collection.extend({
         // mergedFrom used to prevent continuous merge in one row or col
         if (sibling && sibling.equals(tile) && !sibling.isMerged()) {
             moved = true;
-            tile.mergeTo(sibling);
+            tile.mergeTo(sibling); //tile is merged to sibling which becomes occupied
             gained = sibling.get('value');
+            if (sibling.get('value')) {
+                this.won = true;
+            }
         }
         else if (!tile.equals(farthest) ) { // farthest is another free tile
             moved = true;
             tile.moveTo(farthest);
-            //farthest.put(tile.get('value'));
-            //tile.free();
         }
         //console.info(this.getOccupiedTiles());
         return {moved:moved, gained:gained};
@@ -78,6 +80,7 @@ app.Grid = Backbone.Collection.extend({
 
     buildTraversal: function(direction) {
         var otiles = this.getOccupiedTiles();
+        //need to first move tiles with higher indexes if it is right or down
         return (direction == 'up' || direction == 'left') ?
             otiles : otiles.reverse();
     },
@@ -85,7 +88,7 @@ app.Grid = Backbone.Collection.extend({
     move: function(direction) {
         var moved = false;
         var gained = 0; //total gain in the new move
-        //set tile state for the next move (prev, mergeFrom etc.)
+        //set tile initial state for the next move (prev, mergeFrom etc.)
         this.prepareTiles();
 
         _(this.buildTraversal(direction)).each(function(tile, i) {
@@ -95,7 +98,7 @@ app.Grid = Backbone.Collection.extend({
             gained += r.gained;
         }, this);
         if (moved) { 
-            // move done, random a new one and trigger view to repaint 
+            // move done, random a new tile and trigger view to repaint 
             this.randomTile(); 
             //console.info(_(this.getOccupiedTiles()).pluck('attributes') );
             this.trigger('tileschange', this);

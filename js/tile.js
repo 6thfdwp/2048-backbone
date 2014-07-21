@@ -12,25 +12,24 @@ var app = app || {};
         },
 
         initialize: function() {
-            var pos = this.getPos();
+            var pos = this.initPos();
             this.set({x:pos.x, y:pos.y});
         },
 
-        getPos: function() {
-            //var x = this.get('x'), y = this.get('y');
-            //if (x != null && y != null) 
-                //return {x:x, y:y};
+        initPos: function() {
+            //initialze tile pos when game started
             var idx = this.get('idx');
             var size = this.get('grid').size;
             var y = Math.floor(idx / size);
             var x = idx % size;
-            return {x:x, y:y};
+            return {x:x+1, y:y+1};
+        },
+        getPos: function() {
+            return {x:this.get('x'), y:this.get('y')};
         },
 
         put: function(value) {
             this.set({value: value});
-            //var pos = this.getPos();
-            //this.set({x:pos.x, y:pos.y, value:value});
         },
 
         isfree: function() {

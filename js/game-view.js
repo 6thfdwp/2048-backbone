@@ -54,16 +54,16 @@ app.GameBoard = Backbone.View.extend({
         var r = [];
         _(tiles).each(function(tile, i) {
             var prev = tile.get('prev');
-            var tilePos = this._normalizePos(tile.get('x'), tile.get('y'));
+            //var tilePos = this._normalizePos(tile.get('x'), tile.get('y'));
+            var tilePos = tile.getPos();
             var tilePosClass = this._positionClass(tilePos);
-            //var classes = [posClass];
             var tplstr = this.tileTpl({
                 value:tile.get('value')
             });
             var tileEl = $(tplstr);
             //if a tile moved, first apply its previous position
             //otherwise apply its original position
-            var pos = prev ? this._normalizePos(prev.get('x'), prev.get('y')) : tilePos;
+            var pos = prev ? prev.getPos() : tilePos;
             var posClass = this._positionClass(pos);
             tileEl.addClass(posClass);
             if (prev) {
@@ -73,15 +73,15 @@ app.GameBoard = Backbone.View.extend({
                 });
             }
             else if (tile.isNew())
-                //classes.push('tile-new');
                 tileEl.addClass('tile-new');
             else if (tile.isMerged())
                 //classes.push('tile-merged');
                 tileEl.addClass('tile-merged');
             //tileEl.addClass(classes.join(' '));
             r.push(tileEl);
-            $('.tile-container').append(tileEl);
+            //$('.tile-container').append(tileEl);
         }, this);
+        $('.tile-container').append(r);
     },
 
     rePaint: function(grid) {
