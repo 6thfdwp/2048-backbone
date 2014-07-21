@@ -13,9 +13,7 @@ app.GameBoard = Backbone.View.extend({
     tileTpl: _.template($('#game-tile-template').html()),
     
     initialize: function() {
-        //this.listenTo(app.grid, 'tileschange', this.rePaint);
         this.listenTo(this.model, 'tileschange', this.rePaint);
-        //this.listenTo(app.grid, 'scorechange', this.updateScore);
         this.listenTo(this.model, 'scorechange', this.updateScore);
         //for debug 
         //this.listenTo(app.grid, 'tileschange', this.log);
