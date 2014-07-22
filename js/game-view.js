@@ -46,39 +46,6 @@ app.GameBoard = Backbone.View.extend({
     _positionClass: function(pos) {
         return 'tile-position-' + pos.x + '-' + pos.y;
     },
-    addTiles: function(tiles) {
-        var r = [];
-        _(tiles).each(function(tile, i) {
-            var prev = tile.get('prev');
-            //var tilePos = this._normalizePos(tile.get('x'), tile.get('y'));
-            var tilePos = tile.getPos();
-            var tilePosClass = this._positionClass(tilePos);
-            var tplstr = this.tileTpl({
-                value:tile.get('value')
-            });
-            var tileEl = $(tplstr);
-            //if a tile moved, first apply its previous position
-            //otherwise apply its original position
-            var pos = prev ? prev.getPos() : tilePos;
-            var posClass = this._positionClass(pos);
-            tileEl.addClass(posClass);
-            if (prev) {
-                window.requestAnimationFrame(function() {
-                    tileEl.removeClass(posClass);
-                    tileEl.addClass(tilePosClass);
-                });
-            }
-            else if (tile.isNew())
-                tileEl.addClass('tile-new');
-            else if (tile.isMerged())
-                //classes.push('tile-merged');
-                tileEl.addClass('tile-merged');
-            //tileEl.addClass(classes.join(' '));
-            r.push(tileEl);
-            //$('.tile-container').append(tileEl);
-        }, this);
-        $('.tile-container').append(r);
-    },
 
     _findTileEl: function(idx) {
         return $('#' + idx);
