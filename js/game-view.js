@@ -1,7 +1,8 @@
 app.GameBoard = Backbone.View.extend({
     el: $(document),
     events: {
-        'keydown': 'move'
+        'keydown'               :  'move',
+        'click .restart-button ':  'restart'
     },
     keyMap: {
         38: 'up',
@@ -28,6 +29,10 @@ app.GameBoard = Backbone.View.extend({
         return this;
     },
     
+    restart: function() {
+        this.model.restart();
+    },
+
     move: function(event) {
         //Backbone ensure 'this' point to view object in event delegate
         var modifiers = event.altKey || event.ctrlKey || event.metaKey ||

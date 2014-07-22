@@ -23,6 +23,13 @@ app.Grid = Backbone.Collection.extend({
         this.trigger('tileschange', this);
     },
 
+    restart: function() {
+        this.each(function(tile) {
+            tile.free();
+        });
+        this.setup();
+    },
+
     getFreeTiles: function() {
         return this.filter(function(tile) {
             return tile.isfree();

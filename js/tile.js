@@ -38,8 +38,12 @@ var app = app || {};
         },
 
         free: function() {
-            //this.set({value: 0, mergedFrom: false});
-            this.set({value: 0});
+            this.set({
+                value: 0, prev: null,
+                isNew: false,
+                mergedFrom: false
+            });
+            //this.set({value: 0});
         },
 
         up: function() {
@@ -95,7 +99,7 @@ var app = app || {};
             var value = this.get('value');
             other.put(value*2);
             //mergedFrom = [this, other];
-            var c = this.clone(); //for animation
+            var c = this.clone(); //for slide effect
             other.set({prev: c});
             other.set({mergedFrom: true});
             this.free();
