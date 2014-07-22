@@ -39,10 +39,6 @@ app.GameBoard = Backbone.View.extend({
         }
     },
 
-    _normalizePos: function(x, y) {
-        return {x:x+1, y:y+1};
-    },
-
     clearTiles: function() {
         $('.tile-container').empty();
     },
@@ -84,12 +80,54 @@ app.GameBoard = Backbone.View.extend({
         $('.tile-container').append(r);
     },
 
+    _findTileEl: function(idx) {
+        return $('#' + idx);
+    },
+    _new: function(tile) {
+        var tplstr = this.tileTpl({
+            idx:   tile.get('idx'),
+            value: tile.get('value'),
+            x:tile.get('x'), y:tile.get('y')
+        });
+        var tileEl = $(tplstr);
+        return tileEl;
+        //$('.tile-container').append(tileEl);
+    },
+
+    renderTiles: function(tiles) {
+        var r = [];
+        _(tiles).each(function(tile, i) {
+            var prev = tile.get('prev');
+            var tilePos = tile.getPos();
+            var tilePosClass = this._positionClass(tilePos);
+            //for moved and merged tiles, need to render prev first
+            //and change position class later for animated sliding
+            var tileEl = prev ? this._new(prev) : this._new(tile);
+            r.push(tileEl);
+            if (prev) {
+                var prevClass = this._positionClass(prev.getPos());
+                window.requestAnimationFrame(function() {
+                    tileEl.removeClass(prevClass);
+                    tileEl.addClass(tilePosClass);
+                });
+            }
+            if (tile.isMerged()) {
+                var mergedEl = this._new(tile).addClass('tile-merged');
+                r.push(mergedEl);
+            }
+            if (tile.isNew()) {
+                tileEl.addClass('tile-new');
+            }
+        }, this);
+        $('.tile-container').append(r);
+    },
+
     rePaint: function(grid) {
         var tiles = grid.getOccupiedTiles();
         var self = this;
         window.requestAnimationFrame(function() {
             self.clearTiles();
-            self.addTiles(tiles);
+            self.renderTiles(tiles);
         });
     },
 

@@ -56,7 +56,7 @@ app.Grid = Backbone.Collection.extend({
             moved = true;
             tile.mergeTo(sibling); //tile is merged to sibling which becomes occupied
             gained = sibling.get('value');
-            if (sibling.get('value')) {
+            if (sibling.get('value') == 2048) {
                 this.won = true;
             }
         }
