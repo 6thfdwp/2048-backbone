@@ -73,7 +73,7 @@ app.GameBoard = Backbone.View.extend({
             var tilePos = tile.getPos();
             var tilePosClass = this._positionClass(tilePos);
             //for moved and merged tiles, need to render prev first
-            //and change position class later for animated sliding
+            //and change position class later for sliding effect
             var tileEl = prev ? this._new(prev) : this._new(tile);
             r.push(tileEl);
             if (prev) {
@@ -105,10 +105,12 @@ app.GameBoard = Backbone.View.extend({
 
     updateScore: function(score, gained) {
         //$('.score-container:first-child').remove();
-        var gainEl = $('<div class="score-addition"></div>');
-        gainEl.text('+' + gained);
         $('.score-container').text(score);
-        $('.score-container').append(gainEl);
+        if (gained != 0) {
+            var gainEl = $('<div class="score-addition"></div>');
+            gainEl.text('+' + gained);
+            $('.score-container').append(gainEl);
+        }
     },
 
     log: function(grid) {

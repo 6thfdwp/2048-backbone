@@ -21,6 +21,9 @@ app.Grid = Backbone.Collection.extend({
         }
         // notify view to repaint
         this.trigger('tileschange', this);
+        this.score = 0;
+        this.won = false;
+        this.trigger('scorechange', 0, 0);
     },
 
     restart: function() {
