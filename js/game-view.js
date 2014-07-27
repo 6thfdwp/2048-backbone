@@ -36,6 +36,7 @@ app.GameBoard = Backbone.View.extend({
     
     restart: function() {
         this.stoprun();
+        this.clearMessage();
         this.model.restart();
     },
 
@@ -103,7 +104,6 @@ app.GameBoard = Backbone.View.extend({
         });
         var tileEl = $(tplstr);
         return tileEl;
-        //$('.tile-container').append(tileEl);
     },
 
     renderTiles: function(tiles) {
@@ -141,11 +141,10 @@ app.GameBoard = Backbone.View.extend({
             self.clearTiles();
             self.renderTiles(tiles);
             if (grid.won) {
-                console.info('You win:)');
+                self.message(true);
             }
             else if (grid.over) {
-                console.info('Game over:(');
-                //if (this.running) this.stoprun();
+                self.message(false);
             }
         });
     },
@@ -158,6 +157,16 @@ app.GameBoard = Backbone.View.extend({
             gainEl.text('+' + gained);
             $('.score-container').append(gainEl);
         }
+    },
+
+    message: function(won) {
+        var style = won ? 'game-won' : 'game-over';
+        var msg = won ? 'You win:)' : 'You lose:(';
+        $('.game-message').addClass(style);
+        $('.game-message p').text(msg);
+    },
+    clearMessage: function() {
+        $('.game-message').removeClass('game-won game-over');
     },
 
     log: function(grid) {

@@ -2,7 +2,7 @@ var app = app || {};
 
 app.Grid = Backbone.Collection.extend({
     size:       4,
-    startTiles: 15,
+    startTiles: 2,
     score:      0,
     won:        false,
     over:       false,
