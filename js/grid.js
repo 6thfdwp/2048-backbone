@@ -2,9 +2,10 @@ var app = app || {};
 
 app.Grid = Backbone.Collection.extend({
     size:       4,
-    startTiles: 2,
+    startTiles: 15,
     score:      0,
     won:        false,
+    over:       false,
     model:      app.Tile,
 
     initialize: function(modeldata, options) {
@@ -19,10 +20,11 @@ app.Grid = Backbone.Collection.extend({
         for (var j=0; j<this.startTiles; j++) {
             this.randomTile();
         }
-        // notify view to repaint
-        this.trigger('tileschange', this);
         this.score = 0;
         this.won = false;
+        this.over= false;
+        // notify view to repaint
+        this.trigger('tileschange', this);
         this.trigger('scorechange', 0, 0);
     },
 
@@ -52,10 +54,25 @@ app.Grid = Backbone.Collection.extend({
             var free = tiles[Math.floor(Math.random() * tiles.length)];
             free.put(value);
             free.set({isNew: true});
-            //return free.attributes;
         }
     },
 
+    movable: function() {
+        //check if any tile can still be moved
+        //when whole grid is occupied
+        if (this.getFreeTiles().length != 0) {
+            return true;
+        }
+        var dir = _(['up','down','right','left']).find(function(direction) {
+            var moved = this.find(function(tile, i) {
+                var other = tile[direction]();
+                return other && other.equals(tile);
+            });
+            return moved !== undefined;
+        }, this);
+        return dir;
+    },
+    
     moveTile: function(tile, direction) {
         var moved = false, gained = 0;
         var next = tile.findNext(direction);
@@ -107,15 +124,16 @@ app.Grid = Backbone.Collection.extend({
             if (!moved) moved = r.moved; 
             gained += r.gained;
         }, this);
-        if (moved) { 
-            // move done, random a new tile and trigger view to repaint 
-            this.randomTile(); 
-            //console.info(_(this.getOccupiedTiles()).pluck('attributes') );
-            this.trigger('tileschange', this);
-            if (gained != 0) {
-                this.score += gained;
-                this.trigger('scorechange', this.score, gained);
-            }
+
+        if (!moved) return;
+        // move done, random a new tile and trigger view to repaint 
+        this.randomTile(); 
+        //console.info(_(this.getOccupiedTiles()).pluck('attributes') );
+        if (!this.movable()) this.over = true;
+        this.trigger('tileschange', this);
+        if (gained != 0) {
+            this.score += gained;
+            this.trigger('scorechange', this.score, gained);
         }
     },
 });
