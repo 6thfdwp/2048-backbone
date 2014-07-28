@@ -176,7 +176,7 @@ footer a {
 .best-container:after {
   content: "Best"; }
 
-.above-game:after {
+.above-game:after, .ai:after {
   content: "";
   display: block;
   clear: both; }
@@ -198,9 +198,10 @@ footer a {
   display: block;
   text-align: center;
   float: right; }
-.note {
-    /*float: left;*/
-    width: 500px;}
+.autorun-button {
+  float: left;
+}
+
 hr {
   border: none;
   border-bottom: 1px solid #d8d4d0;
