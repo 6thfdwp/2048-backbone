@@ -2,7 +2,8 @@ app.GameBoard = Backbone.View.extend({
     el: $(document),
     events: {
         'keydown'               :  'move',
-        'click .restart-button ':  'restart'
+        'click .restart-button ':  'restart',
+        'click .autorun-button ':  'autorun'
     },
     keyMap: {
         38: 'up',
@@ -11,13 +12,17 @@ app.GameBoard = Backbone.View.extend({
         37: 'left'
     },
     template: _.template($('#game-board-template').html() ),
-    tileTpl: _.template($('#game-tile-template').html()),
+    tileTpl: _.template($('#game-tile-template').html() ),
     
+    running         : false,
+    animationDelay  : 150,
+    $runbtn         : $('.autorun-button'),
+
     initialize: function() {
         this.listenTo(this.model, 'tileschange', this.rePaint);
         this.listenTo(this.model, 'scorechange', this.updateScore);
         //for debug 
-        //this.listenTo(app.grid, 'tileschange', this.log);
+        //this.listenTo(this.model, 'tileschange', this.log);
         this.render();
         // set up random tiles when game starts
         this.model.setup();
@@ -30,7 +35,43 @@ app.GameBoard = Backbone.View.extend({
     },
     
     restart: function() {
+        this.stoprun();
+        this.clearMessage();
         this.model.restart();
+    },
+
+    _randomdir: function() {
+        var i = Math.floor(Math.random() * 4);
+        return ['up','down','right','left'][i];
+    },
+    run: function() {
+        var self = this;
+        var grid = this.model;
+        var direction = this._randomdir();
+        grid.move(direction);
+        if (this.running && !grid.over && !grid.won) {
+            setTimeout(function() {
+                self.run();
+            }, this.animationDelay)
+        }
+        if (grid.over || grid.won) {
+            this.stoprun();
+        }
+    },
+    autorun: function() {
+        if (this.running) {
+            this.stoprun();
+        }
+        else {
+            this.running = true;
+            this.$runbtn.text('Stop');
+            this.run();
+        }
+    },
+
+    stoprun: function() {
+        this.$runbtn.text('Auto Run');
+        this.running = false;
     },
 
     move: function(event) {
@@ -38,9 +79,9 @@ app.GameBoard = Backbone.View.extend({
         var modifiers = event.altKey || event.ctrlKey || event.metaKey ||
             event.shiftKey;
         var dir    = this.keyMap[event.which];
-        if (!modifiers && dir != undefined) {
+        if (!modifiers && dir !== undefined) {
             event.preventDefault();
-            app.grid.move(dir);
+            this.model.move(dir);
         }
     },
 
@@ -63,7 +104,6 @@ app.GameBoard = Backbone.View.extend({
         });
         var tileEl = $(tplstr);
         return tileEl;
-        //$('.tile-container').append(tileEl);
     },
 
     renderTiles: function(tiles) {
@@ -100,6 +140,12 @@ app.GameBoard = Backbone.View.extend({
         window.requestAnimationFrame(function() {
             self.clearTiles();
             self.renderTiles(tiles);
+            if (grid.won) {
+                self.message(true);
+            }
+            else if (grid.over) {
+                self.message(false);
+            }
         });
     },
 
@@ -111,6 +157,16 @@ app.GameBoard = Backbone.View.extend({
             gainEl.text('+' + gained);
             $('.score-container').append(gainEl);
         }
+    },
+
+    message: function(won) {
+        var style = won ? 'game-won' : 'game-over';
+        var msg = won ? 'You win:)' : 'You lose:(';
+        $('.game-message').addClass(style);
+        $('.game-message p').text(msg);
+    },
+    clearMessage: function() {
+        $('.game-message').removeClass('game-won game-over');
     },
 
     log: function(grid) {
@@ -126,6 +182,12 @@ app.GameBoard = Backbone.View.extend({
                 row = [];
             }
         });
+        if (grid.won) {
+            console.info('You win:)');
+        }
+        else if (grid.over) {
+            console.info('Game over:(');
+        }
     }
 });
 

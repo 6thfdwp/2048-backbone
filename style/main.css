@@ -176,7 +176,7 @@ footer a {
 .best-container:after {
   content: "Best"; }
 
-.above-game:after {
+.above-game:after, .ai:after {
   content: "";
   display: block;
   clear: both; }
@@ -186,7 +186,7 @@ footer a {
   line-height: 42px;
   margin-bottom: 0; }
 
-.restart-button {
+.restart-button, .autorun-button {
   display: inline-block;
   background: #8f7a66;
   border-radius: 3px;
@@ -198,9 +198,10 @@ footer a {
   display: block;
   text-align: center;
   float: right; }
-.note {
-    /*float: left;*/
-    width: 500px;}
+.autorun-button {
+  float: left;
+}
+
 hr {
   border: none;
   border-bottom: 1px solid #d8d4d0;
